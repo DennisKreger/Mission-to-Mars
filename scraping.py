@@ -72,7 +72,7 @@ def featured_image(browser):
     # Add try/except for error handling
     try:
         # Find the relative image url
-        img_url_rel = img_soup.find('img', class_='fancybox-image').get('src')
+        img_url_rel = img_soup.find('img', class_='headerimage').get('src')
 
     except AttributeError:
         return None
