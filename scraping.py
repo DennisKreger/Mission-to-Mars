@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup as soup
 import pandas as pd
+from splinter import Browser
+from webdriver_manager.chrome import ChromeDriverManager
 
 def mars_news(browser):
 
@@ -69,3 +71,9 @@ def mars_facts():
 
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html()
+
+def scrape_all():
+    # Initiate headless driver for deployment
+    executable_path = {'executable_path': ChromeDriverManager().install()}
+    browser = Browser('chrome', **executable_path, headless=True)
+
