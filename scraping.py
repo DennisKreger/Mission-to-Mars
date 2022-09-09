@@ -19,6 +19,7 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
+        "hemispheres": hemisphere_data(browser),
         "last_modified": dt.datetime.now()
     }
 
@@ -95,9 +96,62 @@ def mars_facts():
     df.set_index('Description', inplace=True)
 
     # Convert dataframe into HTML format, add bootstrap
-    return df.to_html(classes="table table-striped")
+    return df.to_html(classes="table table-hover")
+
+# ### Hemispheres
+def hemisphere_data(browser):
+    try:
+        # 1. Use browser to visit the URL 
+        url = 'https://marshemispheres.com/'
+        browser.visit(url)
+
+        # 2. Create a list to hold the images and titles.
+        hemisphere_image_urls = []
+
+        # 3. Write code to retrieve the image urls and titles for each hemisphere.
+        html = browser.html
+        mars_soup = soup(html, 'html.parser')
+        results = mars_soup.find_all('div', class_='description')
+
+        # Set up an interation variable
+        i = 0
+
+        # Loop through images to collect desired data
+        for res in results:
+            
+            #Get image title 
+            title = res.find('h3').text
+            
+            #Find and click on image link use i to keep from looping same link 
+            hemi_page = browser.find_by_tag('h3')[i]
+            i = i+1
+            
+            # Click the hemisphere page link
+            hemi_page.click()
+            
+            # Find the jpg link labeled "Sample" and click it
+            hemi_pic = browser.find_by_text('Sample')
+            hemi_pic.click()
+            
+            # Grab URL from current window then close it
+            window = browser.windows[1]
+            jpeg_url = window.url
+            window.close()
+            
+            # Add variables to dictionary
+            holding_dict = dict({'img_url': jpeg_url, 'title': title})
+            hemisphere_image_urls.append(holding_dict)
+            
+            # Return to previous page before repeating loop 
+            browser.back()
+        
+        return hemisphere_image_urls
+    
+    except AttributeError:
+        return None
 
 if __name__ == "__main__":
 
     # If running as script, print scraped data
     print(scrape_all())
+
